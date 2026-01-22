@@ -149,4 +149,39 @@ HAVING COUNT(*)>2)
 SELECT * FROM dept_with_more_than_2_emp;
 SELECT * FROm employees;
 
+-- 11. Using a CTE, find highest salary in each department
+WITH highest_sal_in_each_dept AS(
+SELECT department,MAX(salary) AS max_sal_in_dept
+FROM employees
+GROUP BY department
+)
+SELECT *
+FROM highest_sal_in_each_dept
+ORDER BY max_sal_in_dept;
+
+-- 12.Using a CTE, find employees who earn more than the average salary of their department
+WITH dept_avg AS (
+    SELECT department, AVG(salary) AS avg_salary
+    FROM employees
+    GROUP BY department
+)
+SELECT e.emp_name,
+       e.department,
+       e.salary
+FROM employees e
+JOIN dept_avg d ON e.department = d.department
+WHERE e.salary > d.avg_salary;
+
+
+-- 13. Using a CTE, find departments with total salary greater than 200,000
+WITH total_sal_greater_than_200000 AS(
+SELECT department,SUM(salary)AS total_salary
+FROM employees
+GROUP BY department
+)
+SELECT department,total_salary
+FROM total_sal_greater_than_200000
+WHERE total_salary>200000;
+SELECT * FROM employees;
+
 
