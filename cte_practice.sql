@@ -184,4 +184,14 @@ FROM total_sal_greater_than_200000
 WHERE total_salary>200000;
 SELECT * FROM employees;
 
+-- 14. Using a CTE, find ACTIVE employees who earn above the company average salary
+WITH comp_avg AS (
+    SELECT AVG(salary) AS comp_avg_sal
+    FROM employees
+)
+SELECT emp_name, salary, status
+FROM employees
+WHERE status = 'ACTIVE'
+  AND salary > (SELECT comp_avg_sal FROM comp_avg);
+
 
