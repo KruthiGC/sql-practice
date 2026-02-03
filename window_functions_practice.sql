@@ -59,3 +59,35 @@ SELECT * FROM insurance_claims;
 SELECT claim_id,policy_id,
 COUNT(policy_id)OVER(PARTITION BY policy_id)as count_of_claims_per_policy
 FROM insurance_claims;
+
+-- 6️.claim_amount > hospital average (window function + filter)
+WITH hosp_avg AS(
+SELECT claim_id,policy_id,claim_amount,hospital,
+AVG(claim_amount)OVER(PARTITION BY hospital)as hosp_avg
+FROM insurance_claims)
+SELECT * 
+FROM hosp_avg
+WHERE claim_amount>hosp_avg;
+
+SELECT * FROM insurance_claims;
+
+-- 7.Assign a unique row number to each claim within the same policy_id, ordered by claim_date (earliest first).
+SELECT claim_id,policy_id,claim_date,
+row_number()OVER(PARTITION BY policy_id ORDER BY claim_date) rk
+FROM insurance_claims;
+
+-- 8 Rank claims by claim_amount within each customer using RANK().
+SELECT claim_id,customer_name,claim_amount,
+RANK()OVER(PARTITION BY customer_name ORDER BY claim_amount DESC)as rk
+FROM insurance_claims;
+
+SELECT * FROM insurance_claims;
+
+-- 9️.Find the highest claim per customer (return only those rows)
+WITH highest_clm_per_cust AS(
+SELECT claim_id,customer_name,claim_amount,
+RANK()OVER(PARTITION BY customer_name ORDER BY claim_Amount DESC) as rk
+FROM insurance_claims)
+SELECT *
+FROM highest_clm_per_cust
+WHERE rk=1;
